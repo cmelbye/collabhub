@@ -1,0 +1,37 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #202020;
+	color: #ffffff;
+	font-family: "lucida grande", sans-serif;
+	font-size: 10pt;
+}
+
+div#inputbox {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	
+	background: #101010;
+}
+
+div#inputbox form {
+	margin: 2em;
+}
+
+div#inputbox form input[type='text'] {
+	width: 100%;
+}
+
+div#chatbox {
+	margin-bottom: 5em;
+	overflow: auto;
+}
+
+div#chatbox p {
+	border-bottom: 1px solid #282828;
+	padding: 1em 2em;
+}
