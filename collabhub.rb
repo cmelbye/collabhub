@@ -22,6 +22,8 @@ before do
    this_param[split_keys.last] = value
   end
   request.params.replace new_params
+  
+  @defer = false
 end
 
 get '/' do
@@ -29,6 +31,8 @@ get '/' do
 end
 
 get '/grab' do
+  @defer = true
+  
   modif = File.mtime( options.file ).to_i
   lastmodif = defined?(params[:timestamp]) ? params[:timestamp].to_i : 0
   latest = defined?(params[:latest]) ? params[:latest].to_i : 0
@@ -73,4 +77,10 @@ post '/post' do
   @message.save
   
   FileUtils.touch( options.file )
+end
+
+class Sinatra::Application
+  def deferred?(env)
+    return true if @defer
+  end
 end
