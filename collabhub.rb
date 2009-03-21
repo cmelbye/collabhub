@@ -45,7 +45,6 @@ get '/grab' do
   
   messages = Message.find(:all, :conditions => "id > #{latest}")
   
-  
   latest = Message.last
   
   response = {}
