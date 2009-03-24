@@ -94,6 +94,6 @@ Comet.prototype = {
         inputbox.value = "";
         inputbox.focus();
         
-        scrollTo(0, chatbox.scrollHeight);
+        scrollTo(0, $('chatbox').scrollHeight);
     }
 }
