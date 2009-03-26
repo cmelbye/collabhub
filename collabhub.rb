@@ -34,22 +34,24 @@ get '/grab' do
   
   latest = Message.last
   
-  response = {}
-  response[:messages] = []
+  json_response = {}
+  json_response[:messages] = []
   
   for message in messages
-    response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
+    json_response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
   end
   
-  response[:timestamp] = modif
+  json_response[:timestamp] = modif
   
   if latest
-    response[:latest] = latest.id
+    json_response[:latest] = latest.id
   else
-    response[:latest] = 0
+    json_response[:latest] = 0
   end
   
-  json = response.to_json
+  json = json_response.to_json
+  
+  response['Cache-Control'] = "max-age=0"
   
   return json
 end
