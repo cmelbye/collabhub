@@ -10,19 +10,6 @@ configure do
 end
 
 before do
-  new_params = {}
-  params.each_pair do |full_key, value|
-    this_param = new_params
-    split_keys = full_key.split(/\]\[|\]|\[/)
-    split_keys.each_index do |index|
-      break if split_keys.length == index + 1
-      this_param[split_keys[index]] ||= {}
-      this_param = this_param[split_keys[index]]
-   end
-   this_param[split_keys.last] = value
-  end
-  request.params.replace new_params
-  
   @defer = false
 end
 
@@ -47,22 +34,24 @@ get '/grab' do
   
   latest = Message.last
   
-  response = {}
-  response[:messages] = []
+  json_response = {}
+  json_response[:messages] = []
   
   for message in messages
-    response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
+    json_response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
   end
   
-  response[:timestamp] = modif
+  json_response[:timestamp] = modif
   
   if latest
-    response[:latest] = latest.id
+    json_response[:latest] = latest.id
   else
-    response[:latest] = 0
+    json_response[:latest] = 0
   end
   
-  json = response.to_json
+  json = json_response.to_json
+  
+  response['Cache-Control'] = "max-age=0"
   
   return json
 end
