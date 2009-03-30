@@ -85,7 +85,7 @@ Comet.prototype = {
     },
     
     submit: function() {
-        inputbox = $('input');
+        inputbox = $('msg');
         
         chat_input = inputbox.value;
         
