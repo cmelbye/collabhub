@@ -18,7 +18,7 @@ class CollabHub < Sinatra::Base
   end
 
   aget '/grab' do
-    lastmodif = params[:timestamp] || File.mtime( options.file )
+    lastmodif = Time.at(params[:timestamp].to_i) || File.mtime( options.file )
 
     timer = EM::PeriodicTimer.new(0.01) {
       modif = File.mtime( options.file )
