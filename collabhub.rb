@@ -54,6 +54,5 @@ class CollabHub < Sinatra::Base
     return if params[:msg].empty?
     Message.create!( :body => params[:msg] )
     FileUtils.touch( options.file )
-    redirect '/'
   end
 end
