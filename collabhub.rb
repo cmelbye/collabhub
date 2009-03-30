@@ -26,7 +26,7 @@ class CollabHub < Sinatra::Base
       if modif.to_i > lastmodif.to_i
         timer.cancel
         EM.next_tick {
-          messages = Message.find(:all, :conditions => "created_at > #{lastmodif.to_s(:db)}")
+          messages = Message.find(:all, :conditions => ["created_at > ?", lastmodif.to_s(:db)])
 
           latest = Message.last
 
