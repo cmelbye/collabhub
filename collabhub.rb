@@ -18,15 +18,15 @@ class CollabHub < Sinatra::Base
   end
 
   aget '/grab' do
-    lastmodif = params[:timestamp] || File.mtime( options.file ).to_i
+    lastmodif = params[:timestamp] || File.mtime( options.file )
 
     timer = EM::PeriodicTimer.new(0.01) {
-      modif = File.mtime( options.file ).to_i
+      modif = File.mtime( options.file )
 
-      if modif > lastmodif
+      if modif.to_i > lastmodif.to_i
         timer.cancel
         EM.next_tick {
-          messages = Message.find(:all, :conditions => "created_at > #{lastmodif}")
+          messages = Message.find(:all, :conditions => "created_at > #{lastmodif.to_s(:db)}")
 
           latest = Message.last
 
@@ -37,7 +37,7 @@ class CollabHub < Sinatra::Base
             json_response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
           end
 
-          json_response[:timestamp] = modif
+          json_response[:timestamp] = modif.to_i
 
           json = json_response.to_json
 
