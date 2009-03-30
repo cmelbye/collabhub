@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/async'
-require 'active_record'
+require 'activerecord'
 require 'json'
 require 'models'
 require 'fileutils'
