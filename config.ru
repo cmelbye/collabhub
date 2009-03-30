@@ -1,11 +1,6 @@
+#!/usr/bin/env rackup -s thin
 require 'rubygems'
-require 'sinatra'
-
-Sinatra::Application.default_options.merge!(
-  :run => false,
-  :env => ENV['RACK_ENV']
-)
-
+require 'sinatra/async'
 require 'collabhub'
 
-run Sinatra.application
+run CollabHub.new
