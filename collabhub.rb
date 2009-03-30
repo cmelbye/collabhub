@@ -38,7 +38,6 @@ class CollabHub < Sinatra::Base
           end
 
           json_response[:timestamp] = modif
-          json_response[:latest] = latest && latest.id || 0
 
           json = json_response.to_json
 
@@ -48,6 +47,8 @@ class CollabHub < Sinatra::Base
         }
       end
     }
+    
+    env['async.close'] = lambda { timer.cancel }
   end
 
   post '/post' do
