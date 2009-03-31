@@ -18,7 +18,11 @@ class CollabHub < Sinatra::Base
   end
 
   aget '/grab' do
-    lastmodif = Time.at(params[:timestamp].to_i) || File.mtime( options.file )
+    lastmodif = if ts = params[:timestamp]
+      Time.at(ts.to_i)
+    else
+      Time.at File.mtime( options.file )
+    end
 
     timer = EM::PeriodicTimer.new(0.01) {
       modif = File.mtime( options.file )
@@ -27,8 +31,6 @@ class CollabHub < Sinatra::Base
         timer.cancel
         EM.next_tick {
           messages = Message.find(:all, :conditions => ["created_at > ?", lastmodif.to_s(:db)])
-
-          latest = Message.last
 
           json_response = {}
           json_response[:messages] = []
@@ -47,8 +49,12 @@ class CollabHub < Sinatra::Base
         }
       end
     }
-    
-    env['async.close'] = lambda { timer.cancel }
+
+    closer = lambda { timer.cancel }
+    d = EM::DefaultDeferrable.new
+    d.callback &closer
+    d.errback &closer
+    env['async.close'] = d
   end
 
   post '/post' do
