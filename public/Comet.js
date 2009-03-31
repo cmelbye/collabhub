@@ -18,14 +18,7 @@ Comet.prototype = {
         this.ajax = new Ajax.Request(this.grab_url, {
             method: 'get',
             parameters: { 'timestamp': this.timestamp, 'latest': this.latest },
-            requestHeaders: {
-              'User-Agent': null,
-              'Accept': null,
-              'Accept-Language': null,
-              'Content-Type': null,
-              'Connection': 'keep-alive',
-              'Keep-Alive': null  
-            },
+            requestHeaders: {},
             onSuccess: function(transport) {
                 var response = transport.responseText.evalJSON();
                 this.comet.timestamp = response['timestamp'];
@@ -73,14 +66,7 @@ Comet.prototype = {
         new Ajax.Request(this.post_url, {
             method: 'post',
             parameters: { 'msg': text },
-            requestHeaders: {
-              'User-Agent': null,
-              'Accept': null,
-              'Accept-Language': null,
-              'Content-Type': null,
-              'Connection': 'keep-alive',
-              'Keep-Alive': null  
-            }
+            requestHeaders: {}
         });
     },
     

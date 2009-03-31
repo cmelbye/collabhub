@@ -3,4 +3,4 @@ require 'rubygems'
 require 'sinatra/async'
 require 'collabhub'
 
-run CollabHub.new
+run CollabHub

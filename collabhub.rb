@@ -8,6 +8,8 @@ require 'fileutils'
 
 class CollabHub < Sinatra::Base
   register Sinatra::Async
+  set :app_file, __FILE__
+  enable :static
 
   configure do
     set :file, File.dirname(__FILE__) + '/data.txt'
@@ -51,15 +53,15 @@ class CollabHub < Sinatra::Base
     }
 
     closer = lambda { timer.cancel }
-    d = EM::DefaultDeferrable.new
+    d = env['async.close']
     d.callback &closer
     d.errback &closer
-    env['async.close'] = d
   end
 
   post '/post' do
-    return if params[:msg].empty?
-    Message.create!( :body => params[:msg] )
+    m = params[:msg]
+    return if m.nil? || m.empty?
+    Message.create!( :body => m )
     FileUtils.touch( options.file )
   end
 end
