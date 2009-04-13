@@ -5,6 +5,7 @@ require 'activerecord'
 require 'json'
 require 'models'
 require 'fileutils'
+require 'digest/sha2'
 
 class CollabHub < Sinatra::Base
   register Sinatra::Async
@@ -44,7 +45,7 @@ class CollabHub < Sinatra::Base
           json_response[:timestamp] = modif.to_i
 
           json = json_response.to_json
-
+""
           response['Cache-Control'] = "max-age=0"
 
           body json
@@ -60,7 +61,12 @@ class CollabHub < Sinatra::Base
 
   post '/post' do
     m = params[:msg]
-    return if m.nil? || m.empty?
+    u = params[:username]
+    k = params[:authkey]
+    t = params[:authtoken]
+    hash = t.to_s + "+++" + u.to_s + "+++" + "CollabHubAuthentication"
+    hash = Digest::SHA256.hexdigest( hash )
+    return if m.nil? || m.empty? || ( hash != k )
     Message.create!( :body => m )
     FileUtils.touch( options.file )
   end
