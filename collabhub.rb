@@ -39,13 +39,13 @@ class CollabHub < Sinatra::Base
           json_response[:messages] = []
 
           for message in messages
-            json_response[:messages] << { :id => message.id, :body => message.body, :created_at => message.created_at }
+            json_response[:messages] << { :id => message.id, :body => message.body, :sender => message.sender, :created_at => message.created_at }
           end
 
           json_response[:timestamp] = modif.to_i
 
           json = json_response.to_json
-""
+
           response['Cache-Control'] = "max-age=0"
 
           body json
