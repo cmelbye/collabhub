@@ -10,6 +10,7 @@ class CreateMessages < ActiveRecord::Migration
   def self.up
     create_table :messages do |t|
       t.string :body
+      t.string :sender
       t.timestamps
     end
   end

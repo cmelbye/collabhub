@@ -61,13 +61,22 @@ class CollabHub < Sinatra::Base
 
   post '/post' do
     m = params[:msg]
+    return if m.nil? || m.empty?
+    
     u = params[:username]
     k = params[:authkey]
     t = params[:authtoken]
     hash = t.to_s + "+++" + u.to_s + "+++" + "CollabHubAuthentication"
     hash = Digest::SHA256.hexdigest( hash )
-    return if m.nil? || m.empty? || ( hash != k )
-    Message.create!( :body => m )
+    
+    if u.empty? || k.empty? || t.empty?
+      username = 'Anonymous'
+    else
+      return if hash != k
+      username = u
+    end
+    
+    Message.create!( :body => m, :sender => u )
     FileUtils.touch( options.file )
   end
 end
