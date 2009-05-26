@@ -1,28 +1,17 @@
 var Comet = Class.create();
 Comet.prototype = {
-    timestamp: 0,
-    latest: 0,
     post_url: '/post',
     grab_url: '/grab',
     noerror: true,
     
     initialize: function() { },
     
-    bootstrap: function(timestamp, latest) {
-        this.timestamp = timestamp;
-        this.latest = latest;
-    },
-    
     connect: function() {
-        this.latest 
         this.ajax = new Ajax.Request(this.grab_url, {
             method: 'get',
-            parameters: { 'timestamp': this.timestamp, 'latest': this.latest },
             requestHeaders: {},
             onSuccess: function(transport) {
                 var response = transport.responseText.evalJSON();
-                this.comet.timestamp = response['timestamp'];
-                this.comet.latest = response['latest'];
                 this.comet.handleResponse(response);
                 this.comet.noerror = true;
             },
