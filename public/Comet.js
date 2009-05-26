@@ -45,7 +45,7 @@ Comet.prototype = {
                 
                 chatbox.appendChild(new_element);
                 
-                scrollTo(0, chatbox.scrollHeight);
+                this.scrollDown();
             }
         }
     },
@@ -69,6 +69,10 @@ Comet.prototype = {
         inputbox.value = "";
         inputbox.focus();
         
-        scrollTo(0, $('chatbox').scrollHeight);
-    }
+        this.scrollDown();
+    },
+
+	scrollDown: function() {
+		scrollTo(0, $('chatbox').scrollHeight);
+	}
 }
