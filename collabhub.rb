@@ -1,24 +1,18 @@
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/async'
+require 'rufus/tokyo/tyrant'
 require 'json'
 
 class CollabHub < Sinatra::Base
-  def self.channel
-    @channel ||= EM::Channel.new
-  end
-
-  def channel
-    self.class.channel
-  end
-
-  PushTimeout = 0.05
-
   register Sinatra::Async
   set :app_file, __FILE__
   enable :static
 
+  PushTimeout = 0.05
+  
   get '/' do
+    @messages = datastore.query
     erb :index
   end
 
@@ -54,7 +48,27 @@ class CollabHub < Sinatra::Base
   post '/post' do
     m = params[:msg]
     return if m.nil? || m.empty?
+    
+    datastore[ datastore.genuid.to_s ] = { :body => m }
     channel << m
     nil
+  end
+  
+  # EventMachine Channel
+  def self.channel
+    @channel ||= EM::Channel.new
+  end
+
+  def channel
+    self.class.channel
+  end
+  
+  # Tokyo Tyrant Table DataStore
+  def self.datastore
+    @datastore ||= Rufus::Tokyo::TyrantTable.new( TyrantHost, TyrantPort )
+  end
+  
+  def datastore
+    self.class.datastore
   end
 end

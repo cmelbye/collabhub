@@ -1,4 +1,7 @@
 <div id="chatbox">
+	<% for message in @messages %>
+		<p><%= message['body'] %></p>
+	<% end %>
 </div>
 <div id="inputbox">
 	<form method="post" action="/post" onSubmit="comet.submit(); return false;">
