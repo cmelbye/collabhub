@@ -17,15 +17,19 @@ Comet.prototype = {
                 this.comet.handleResponse(response);
                 this.comet.hadError = false;
             },
+
+			onFailure: function(transport) {
+				this.comet.hadError = true;
+			},
+
             onComplete: function(transport) {
                 if( this.comet.hadError ) {
-					this.debug( 'An error occurred, reconnecting in 5s...' );
-                    setTimeout( function() { comet.connect() }, 5000 );
+					this.comet.debug( 'Error detected, reconnecting in 5s...' );
+                    setTimeout( function() { this.comet.connect() }, 5000 );
                 } else {
-					this.debug( 'Connection was successful, reconnecting...' );
+					this.comet.debug( 'Connection was successful, reconnecting...' );
                     this.comet.connect();
                 }
-                this.comet.hadError = false;
             }
         });
         this.ajax.comet = this;

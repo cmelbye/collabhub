@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'sinatra'
-require 'sinatra/async'
-require 'rufus/tokyo/tyrant'
-require 'json'
+require 'environment'
 
 class CollabHub < Sinatra::Base
   register Sinatra::Async
@@ -65,7 +63,11 @@ class CollabHub < Sinatra::Base
   
   # Tokyo Tyrant Table DataStore
   def self.datastore
-    @datastore ||= Rufus::Tokyo::TyrantTable.new( TyrantHost, TyrantPort )
+    if TyrantHost && TyrantPort && UseTokyo
+      @datastore ||= Rufus::Tokyo::TyrantTable.new( TyrantHost, TyrantPort )
+    else
+      @datastore ||= FakeDataStore.new
+    end
   end
   
   def datastore
