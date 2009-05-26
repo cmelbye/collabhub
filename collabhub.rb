@@ -49,7 +49,7 @@ class CollabHub < Sinatra::Base
     m = params[:msg]
     return if m.nil? || m.empty?
     
-    datastore[ datastore.genuid.to_s ] = { :body => m }
+    datastore[ datastore.genuid.to_s ] = { 'body' => m }
     channel << m
     nil
   end
