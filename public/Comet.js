@@ -2,26 +2,30 @@ var Comet = Class.create();
 Comet.prototype = {
     post_url: '/post',
     grab_url: '/grab',
-    noerror: true,
+    hadError: true,
     
     initialize: function() { },
     
     connect: function() {
+		this.hadError = true;
+		this.debug( 'Connecting to Comet endpoint: ' + this.grab_url );
         this.ajax = new Ajax.Request(this.grab_url, {
             method: 'get',
             requestHeaders: {},
             onSuccess: function(transport) {
                 var response = transport.responseText.evalJSON();
                 this.comet.handleResponse(response);
-                this.comet.noerror = true;
+                this.comet.hadError = false;
             },
             onComplete: function(transport) {
-                if( !this.comet.noerror ) {
-                    setTimeout( function(){comet.connect() }, 5000);
+                if( this.comet.hadError ) {
+					this.debug( 'An error occurred, reconnecting in 5s...' );
+                    setTimeout( function() { comet.connect() }, 5000 );
                 } else {
+					this.debug( 'Connection was successful, reconnecting...' );
                     this.comet.connect();
                 }
-                this.comet.noerror = false;
+                this.comet.hadError = false;
             }
         });
         this.ajax.comet = this;
@@ -52,6 +56,7 @@ Comet.prototype = {
     
     doRequest: function( text )
     {
+		this.debug( 'Sending AJAX request to post message');
         new Ajax.Request(this.post_url, {
             method: 'post',
             parameters: { 'msg': text },
@@ -74,5 +79,11 @@ Comet.prototype = {
 
 	scrollDown: function() {
 		scrollTo(0, $('chatbox').scrollHeight);
+	},
+	
+	debug: function( text ) {
+		if( window.console ) {
+			console.log( text );
+		}
 	}
 }
