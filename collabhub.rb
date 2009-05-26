@@ -1,13 +1,19 @@
 require 'rubygems'
 require 'sinatra'
 require 'sinatra/async'
-require 'activerecord'
 require 'json'
-require 'models'
-require 'fileutils'
-require 'digest/sha2'
 
 class CollabHub < Sinatra::Base
+  def self.channel
+    @channel ||= EM::Channel.new
+  end
+
+  def channel
+    self.class.channel
+  end
+
+  PushTimeout = 0.05
+
   register Sinatra::Async
   set :app_file, __FILE__
   enable :static
@@ -21,39 +27,39 @@ class CollabHub < Sinatra::Base
   end
 
   aget '/grab' do
-    lastmodif = if ts = params[:timestamp]
-      Time.at(ts.to_i)
-    else
-      Time.at File.mtime( options.file )
-    end
+    message_buffer = []
+    timer = nil
+    sid = channel.subscribe { |message|
+      message_buffer << message
 
-    timer = EM::PeriodicTimer.new(0.01) {
-      modif = File.mtime( options.file )
+      timer ||= EM::Timer.new(PushTimeout) {
+        json_response = {}
+        json_response[:messages] = []
 
-      if modif.to_i > lastmodif.to_i
-        timer.cancel
-        EM.next_tick {
-          messages = Message.find(:all, :conditions => ["created_at > ?", lastmodif.to_s(:db)])
+        message_buffer.each do |message|
+          json_response[:messages] << { :id => message_buffer.index(message), :body => message, :created_at => Time.now }
+        end
 
-          json_response = {}
-          json_response[:messages] = []
-
+<<<<<<< HEAD:collabhub.rb
           for message in messages
             json_response[:messages] << { :id => message.id, :body => message.body, :sender => message.sender, :created_at => message.created_at }
           end
+=======
+        json_response[:timestamp] = Time.now.to_i
+>>>>>>> e798afd43b53189bb0d5ed2e5b0d5c6442537ecb:collabhub.rb
 
-          json_response[:timestamp] = modif.to_i
+        json = json_response.to_json
 
-          json = json_response.to_json
+        response['Cache-Control'] = "max-age=0"
 
-          response['Cache-Control'] = "max-age=0"
-
-          body json
-        }
-      end
+        body json
+      }
     }
 
-    closer = lambda { timer.cancel }
+    closer = lambda {
+      channel.unsubscribe sid
+      timer.cancel if timer
+    }
     d = env['async.close']
     d.callback &closer
     d.errback &closer
@@ -62,6 +68,7 @@ class CollabHub < Sinatra::Base
   post '/post' do
     m = params[:msg]
     return if m.nil? || m.empty?
+<<<<<<< HEAD:collabhub.rb
     
     u = params[:username]
     k = params[:authkey]
@@ -78,5 +85,9 @@ class CollabHub < Sinatra::Base
     
     Message.create!( :body => m, :sender => u )
     FileUtils.touch( options.file )
+=======
+    channel << m
+    nil
+>>>>>>> e798afd43b53189bb0d5ed2e5b0d5c6442537ecb:collabhub.rb
   end
 end
